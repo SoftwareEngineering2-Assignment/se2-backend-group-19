@@ -11,6 +11,10 @@ const Source = require('../models/source');
 router.get('/dashboards',
   authorization,
   async (req, res, next) => {
+    /**
+     * @name retrieve_dashboards
+     * @description Retreive all dashboards of owner with specified ID
+     */
     try {
       const {id} = req.decoded;
       const foundDashboards = await Dashboard.find({owner: mongoose.Types.ObjectId(id)});
@@ -35,6 +39,11 @@ router.get('/dashboards',
 router.post('/create-dashboard', 
   authorization,
   async (req, res, next) => {
+    /**
+     * @name create_dashboard
+     * @description Create new dashboard with a given NAME for an 
+     *              owner with specified ID, only if the name is unique 
+     */
     try {
       const {name} = req.body;
       const {id} = req.decoded;
@@ -62,6 +71,10 @@ router.post('/create-dashboard',
 router.post('/delete-dashboard', 
   authorization,
   async (req, res, next) => {
+    /**
+     * @name delete_dashboard
+     * @description Delete specified dashboard, if it exists
+     */
     try {
       const {id} = req.body;
 
