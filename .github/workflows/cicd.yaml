@@ -35,5 +35,5 @@ jobs:
             git fetch
             git pull https://${{ secrets.CLONE_TOKEN }}@github.com/SoftwareEngineering2-Assignment/se2-backend-group-19 main
             bash -ci 'npm install'
-            bash -ci 'pm2 restart se2-backend-group-19 --update-env'
+            bash -ci 'pm2 restart se2-backend-19 --update-env'
             bash -ci 'pm2 save'
