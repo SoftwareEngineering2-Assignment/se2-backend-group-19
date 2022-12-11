@@ -3,9 +3,9 @@ name: project_CI
 on: push
 
 env:
-  SENDGRID_API_KEY: ${{secrets.SENDGRID_API_KEY}}
-  SERVER_SECRET: ${{secrets.SERVER_SECRET}}
-  MONGODB_URI: ${{secrets.MONGODB_URI}}
+  SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+  SERVER_SECRET: ${{ secrets.SERVER_SECRET }}
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
 
 jobs: 
   ci: 
@@ -22,8 +22,7 @@ jobs:
     needs: ci
     if: github.ref == 'refs/heads/testing'
     steps:
-      - name: Connect to ssh host
-        uses: appleboy/ssh-action@master
+      - uses: appleboy/ssh-action@master
         with: 
           host: ${{ secrets.SSH_HOST}}
           username: ${{ secrets.SSH_USERNAME}}
@@ -34,7 +33,7 @@ jobs:
             cd ~/se2/19/se2-backend-group-19
             git reset --hard HEAD
             git fetch
-            git pull https://${{secrets.CLONE_TOKEN}}@github.com/SoftwareEngineering2-Assignment/se2-backend-group-19 testing
+            git pull https://${{ secrets.CLONE_TOKEN }}@github.com/SoftwareEngineering2-Assignment/se2-backend-group-19 testing
             bash -ci 'npm install'
             bash -ci 'pm2 restart se2-backend-group-19 --update-env'
             bash -ci 'pm2 save'
