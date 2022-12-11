@@ -16,7 +16,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     needs: ci
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/testing'
     steps:
       - name: Connect to ssh host
         uses: appleboy/ssh-action@master
@@ -27,7 +27,7 @@ jobs:
           port: ${{secrets.SSH_PORT}}
           script: |
             cd ~/se2/19/se2-backend-group-19
-            git reset --hard origin/main
+            git reset --hard origin/testing
             git pull https://${{secrets.CLONE_TOKEN}}@github.com/SoftwareEngineering2-Assignment/se2-backend-group-19 main
             bash -ci 'npm install'
             bash -ci 'pm2 restart se2-backend-group-19'
