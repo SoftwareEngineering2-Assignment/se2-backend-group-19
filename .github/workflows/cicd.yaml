@@ -22,12 +22,12 @@ jobs:
     needs: ci
     if: github.ref == 'refs/heads/testing'
     steps:
-      - uses: appleboy/ssh-action@testing
+      - uses: appleboy/ssh-action@master
         with: 
-          host: ${{ secrets.SSH_HOST}}
-          username: ${{ secrets.SSH_USERNAME}}
-          port: ${{ secrets.SSH_PORT}}
-          password: ${{ secrets.SSH_PASSWORD}}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          password: ${{ secrets.SSH_PASSWORD }}
           script: |
             echo 'Hello world!'
             cd ~/se2/19/se2-backend-group-19
