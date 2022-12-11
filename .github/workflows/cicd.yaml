@@ -20,7 +20,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     needs: ci
-    if: github.ref == 'refs/heads/testing'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: appleboy/ssh-action@master
         with: 
@@ -33,7 +33,7 @@ jobs:
             cd ~/se2/19/se2-backend-group-19
             git reset --hard HEAD
             git fetch
-            git pull https://${{ secrets.CLONE_TOKEN }}@github.com/SoftwareEngineering2-Assignment/se2-backend-group-19 testing
+            git pull https://${{ secrets.CLONE_TOKEN }}@github.com/SoftwareEngineering2-Assignment/se2-backend-group-19 main
             bash -ci 'npm install'
             bash -ci 'pm2 restart se2-backend-group-19 --update-env'
             bash -ci 'pm2 save'
