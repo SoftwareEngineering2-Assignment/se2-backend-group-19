@@ -38,11 +38,9 @@ test('GET /test-url-request returns correct response and status code', async (t)
 
   const bodyPost = await t.context.got('general/test-url-request', {type: 'POST'});
   t.is(bodyPost.statusCode, 200);
-});
 
-test('POST /test-url-request returns correct response and status code', async (t) => {
-  const body = await t.context.post('general/test-url-request', {});
-  t.is(body.statusCode, 200);
+  const bodyPut = await t.context.got('general/test-url-request', {type: 'PUT'});
+  t.is(bodyPut.statusCode, 200);
 });
 
 test('GET /sources returns correct response and status code', async (t) => {
