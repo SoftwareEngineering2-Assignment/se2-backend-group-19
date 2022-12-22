@@ -19,6 +19,7 @@ test.after.always((t) => {
   t.context.server.close();
 });
 
+// GENERAL.JS
 test('GET /statistics returns correct response and status code', async (t) => {
   const {body, statusCode} = await t.context.got('general/statistics');
   t.is(body.sources, 0);
@@ -41,7 +42,17 @@ test('GET /test-url-request returns correct response and status code', async (t)
 
   const bodyPut = await t.context.got('general/test-url-request', {type: 'PUT'});
   t.is(bodyPut.statusCode, 200);
+
+  const bodyError = await t.context.got('general/test-url-request', {type: 'NOT'});
+  t.is(bodyError.statusCode, 500);
 });
+
+// USERS
+test('GET /create returns correct response and status code', async (t) => {
+  const body = await t.context.got('users/create', {username: 'group-19', email: 'test@domain.com'});
+  t.assert(body.success)
+  t.assert(body.id > 0)
+})
 
 test('GET /sources returns correct response and status code', async (t) => {
   const token = jwtSign({id: 1});
