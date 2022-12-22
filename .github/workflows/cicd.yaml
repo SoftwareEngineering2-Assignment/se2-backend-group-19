@@ -1,6 +1,6 @@
 name: project_CI
 
-on: push
+on: commit
 
 env:
   SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}

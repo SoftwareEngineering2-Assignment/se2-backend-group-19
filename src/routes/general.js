@@ -44,6 +44,7 @@ router.get('/test-url',
   async (req, res) => {
     try {
       const {url} = req.query;
+      console.log(req)
       const {statusCode} = await got(url);
       return res.json({
         status: statusCode,

@@ -27,11 +27,8 @@ test('GET /statistics returns correct response and status code', async (t) => {
 });
 
 test('GET /test-url returns correct response and status code', async (t) => {
-  const client = got.extend({
-    baseUrl: 'http://localhost:3000',
-  });
   
-  const body = await client.get('general/test-url');
+  const body = await t.context.got('general/test-url');
   t.is(body.statusCode, 200);
   t.assert(body.active);
 });
