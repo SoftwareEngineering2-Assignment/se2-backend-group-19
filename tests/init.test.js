@@ -26,6 +26,12 @@ test('GET /statistics returns correct response and status code', async (t) => {
   t.is(statusCode, 200);
 });
 
+test('GET /test-url returns correct response and status code', async (t) => {
+  const {body, statusCode} = await t.context.got('general/test-url');
+  t.is(body.status, 200);
+  t.assert(body.active);
+});
+
 test('GET /sources returns correct response and status code', async (t) => {
   const token = jwtSign({id: 1});
   const {statusCode} = await t.context.got(`sources/sources?token=${token}`);
