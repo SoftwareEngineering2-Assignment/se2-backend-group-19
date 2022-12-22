@@ -32,6 +32,19 @@ test('GET /test-url returns correct response and status code', async (t) => {
   t.is(body.statusCode, 200);
 });
 
+test('GET /test-url-request returns correct response and status code', async (t) => {
+  const bodyGet = await t.context.got('general/test-url-request', {type: 'GET'});
+  t.is(bodyGet.statusCode, 200);
+
+  const bodyPost = await t.context.got('general/test-url-request', {type: 'POST'});
+  t.is(bodyPost.statusCode, 200);
+});
+
+test('POST /test-url-request returns correct response and status code', async (t) => {
+  const body = await t.context.post('general/test-url-request', {});
+  t.is(body.statusCode, 200);
+});
+
 test('GET /sources returns correct response and status code', async (t) => {
   const token = jwtSign({id: 1});
   const {statusCode} = await t.context.got(`sources/sources?token=${token}`);
