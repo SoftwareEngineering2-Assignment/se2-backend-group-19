@@ -30,7 +30,6 @@ test('GET /test-url returns correct response and status code', async (t) => {
   
   const body = await t.context.got('general/test-url');
   t.is(body.statusCode, 200);
-  t.assert(body.active);
 });
 
 test('GET /sources returns correct response and status code', async (t) => {
