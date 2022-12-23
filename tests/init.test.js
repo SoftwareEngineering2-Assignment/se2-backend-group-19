@@ -46,7 +46,7 @@ test('GET /test-url-request returns correct response and status code', async (t)
 
 // USERS
 test('GET /create returns correct response and status code', async (t) => {
-  const body = await t.context.got('users/create', {username: 'group-19', email: 'test@domain.com', password: 'test'});
+  const body = await t.context.got('users/create', {'username': 'group-19', 'email': 'test@domain.com', 'password': 'test'});
   console.log(body)
 })
 
