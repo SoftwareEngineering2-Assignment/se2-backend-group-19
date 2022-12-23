@@ -34,20 +34,19 @@ test('GET /test-url returns correct response and status code', async (t) => {
 });
 
 test('GET /test-url-request returns correct response and status code', async (t) => {
-  const bodyGet = await t.context.got('general/test-url-request', {type: 'GET'});
+  const bodyGet = await t.context.got('general/test-url-request', {'type': 'GET'});
   t.is(bodyGet.statusCode, 200);
 
-  const bodyPost = await t.context.got('general/test-url-request', {type: 'POST'});
+  const bodyPost = await t.context.got('general/test-url-request', {'type': 'POST'});
   t.is(bodyPost.statusCode, 200);
 
-  const bodyPut = await t.context.got('general/test-url-request', {type: 'PUT'});
+  const bodyPut = await t.context.got('general/test-url-request', {'type': 'PUT'});
   t.is(bodyPut.statusCode, 200);
 });
 
 // USERS
 test('GET /create returns correct response and status code', async (t) => {
-  const body = await t.context.got('users/create', {'username': 'group-19', 'email': 'test@domain.com', 'password': 'test'});
-  console.log(body)
+  const body = await t.context.got('users/create', {username: 'group-19', email: 'test@domain.com', password: 'test'});
 })
 
 test('GET /sources returns correct response and status code', async (t) => {

@@ -13,6 +13,9 @@ router.post('/create',
   (req, res, next) => validation(req, res, next, 'register'),
   async (req, res, next) => {
     const {username, password, email} = req.body;
+    console.log(username)
+    console.log(password)
+    console.log(email)
     try {
       const user = await User.findOne({$or: [{username}, {email}]});
       if (user) {
