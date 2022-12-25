@@ -7,6 +7,7 @@ module.exports = async (req, res, next, schema) => {
      */
   try {
     const {body} = req;
+    console.log(body)
     await validationSchemas[schema].validate(body);
     next();
   } catch (err) {

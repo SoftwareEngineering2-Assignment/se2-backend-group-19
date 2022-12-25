@@ -12,7 +12,8 @@ const {jwtSign} = require('../src/utilities/authentication/helpers');
 test.before(async (t) => {
   t.context.server = http.createServer(app);
   t.context.prefixUrl = await listen(t.context.server);
-  t.context.got = got.extend({http2: true, throwHttpErrors: false, responseType: 'json', prefixUrl: t.context.prefixUrl});
+  t.context.got = got.extend({http2: true, throwHttpErrors: false, responseType: 'json', 
+                              contentType: 'json', prefixUrl: t.context.prefixUrl});
 });
 
 test.after.always((t) => {
@@ -34,21 +35,29 @@ test('GET /test-url returns correct response and status code', async (t) => {
 });
 
 test('GET /test-url-request returns correct response and status code', async (t) => {
-  const bodyGet = await t.context.got('general/test-url-request', {'type': 'GET'});
+  const bodyGet = await t.context.got('general/test-url-request?type=GET');
   t.is(bodyGet.statusCode, 200);
 
-  const bodyPost = await t.context.got('general/test-url-request', {'type': 'POST'});
+  const bodyPost = await t.context.got('general/test-url-request?type=POST');
   t.is(bodyPost.statusCode, 200);
 
-  const bodyPut = await t.context.got('general/test-url-request', {'type': 'PUT'});
+  const bodyPut = await t.context.got('general/test-url-request?type=PUT');
   t.is(bodyPut.statusCode, 200);
 });
 
 // USERS
-test('GET /create returns correct response and status code', async (t) => {
-  const token = jwtSign({id: 1});
-  const {body, statusCode} = await t.context.got(`users/create?token=${token}`, {username: 'group-19', email: 'test@domain.com', password: 'test'});
-  t.is(statusCode, 200);
+test('POST /create returns correct response and status code', async (t) => {
+  
+  const bodyDict = {
+    username: 'group19', 
+    email: 'test@domain.com', 
+    password: 'test'
+  }
+  const bodyString = JSON.stringify(bodyDict)
+
+  const response = await t.context.got.post('users/create', {body:bodyString});
+  console.log(response.body)
+  t.pass();
 })
 
 // SOURCES
