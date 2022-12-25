@@ -47,7 +47,7 @@ test('GET /test-url-request returns correct response and status code', async (t)
 // USERS
 test('GET /create returns correct response and status code', async (t) => {
   const token = jwtSign({id: 1});
-  const {body, statusCode} = await t.context.got(`users/create?token=${token}`);//, {username: 'group-19', email: 'test@domain.com', password: 'test'});
+  const {body, statusCode} = await t.context.got(`users/create?token=${token}`, {username: 'group-19', email: 'test@domain.com', password: 'test'});
   t.is(statusCode, 200);
 })
 
