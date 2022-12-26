@@ -20,7 +20,7 @@ test.after.always((t) => {
   t.context.server.close();
 });
 
-// GENERAL.JS
+// ===================  GENERAL.JS  ======================
 test('GET /statistics returns correct response and status code', async (t) => {
   const {body, statusCode} = await t.context.got('general/statistics');
   t.is(body.sources, 0);
@@ -46,17 +46,20 @@ test('GET /test-url-request returns correct response and status code', async (t)
   t.is(bodyPut.statusCode, 200);
 });
 
-// USERS
-test('POST /create returns correct response and status code', async (t) => {
+// ===================  USERS.JS  ======================
+test('POST /create returns correct response for new registration', async (t) => {
   
-  const username = 'group30';
+  const timestamp = Date.now();
+  const username = 'group' + timestamp.toString();
   const password = 'test123';
-  const email = 'test30@domain.com';
+  const email = 'test' + timestamp.toString() + '@domain.com';
 
   const body = await t.context.got.post('users/create', {
     json: {username, password, email}
   }).json();
   t.assert(body.success);
+  console.log(username)
+  console.log(body.id)
 });
 
 test('POST /create returns correct response for used email', async (t) => {
@@ -71,7 +74,7 @@ test('POST /create returns correct response for used email', async (t) => {
   t.is(body.status, 409);
 });
 
-test('POST /authenticate returns correct response and status code', async (t) => {
+test('POST /authenticate returns correct response for corrent username and password', async (t) => {
   
   const username = 'group20';
   const password = 'test123';
@@ -83,7 +86,29 @@ test('POST /authenticate returns correct response and status code', async (t) =>
   t.is(body.user.id, '63a8e8245beede9f3c65b852')
 })
 
-test('POST /resetpassword returns correct response and status code', async (t) => {
+test('POST /authenticate returns correct response for incorrent username', async (t) => {
+  
+  const username = 'group0';
+  const password = 'test123';
+
+  const body = await t.context.got.post('users/authenticate', {
+    json: {username, password}
+  }).json();
+  t.is(body.status, 401);
+})
+
+test('POST /authenticate returns correct response for incorrent password', async (t) => {
+  
+  const username = 'group20';
+  const password = 'test321';
+
+  const body = await t.context.got.post('users/authenticate', {
+    json: {username, password}
+  }).json();
+  t.is(body.status, 401);
+})
+
+test('POST /resetpassword returns correct response for correct username', async (t) => {
   
   const username = 'group20';
 
@@ -91,6 +116,16 @@ test('POST /resetpassword returns correct response and status code', async (t) =
     json: {username}
   }).json();
   t.assert(body.ok);
+})
+
+test('POST /resetpassword returns correct response for incorrect username', async (t) => {
+  
+  const username = 'group0';
+
+  const body = await t.context.got.post('users/resetpassword', {
+    json: {username}
+  }).json();
+  t.is(body.status, 404);
 })
 
 test('POST /changepassword returns correct response and status code', async (t) => {
@@ -102,9 +137,9 @@ test('POST /changepassword returns correct response and status code', async (t) 
   const body = await t.context.got.post(`users/changepassword?token=${token}`, {
     json: {username, password}
   }).json();
-  console.log(body);
   t.is(body.status, 404)
 })
+
 
 // SOURCES
 test('GET /sources returns correct response and status code', async (t) => {
