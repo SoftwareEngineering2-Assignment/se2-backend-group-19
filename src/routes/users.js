@@ -99,7 +99,6 @@ router.post('/changepassword',
   async (req, res, next) => {
     const {password} = req.body;
     const {username} = req.decoded;
-    console.log(username)
     try {
       const user = await User.findOne({username});
       if (!user) {

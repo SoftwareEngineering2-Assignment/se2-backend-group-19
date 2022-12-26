@@ -58,8 +58,6 @@ test('POST /create returns correct response for new registration', async (t) => 
     json: {username, password, email}
   }).json();
   t.assert(body.success);
-  console.log(username)
-  console.log(body.id)
 });
 
 test('POST /create returns correct response for used email', async (t) => {
@@ -128,18 +126,29 @@ test('POST /resetpassword returns correct response for incorrect username', asyn
   t.is(body.status, 404);
 })
 
-test('POST /changepassword returns correct response and status code', async (t) => {
+test('POST /changepassword returns correct response for expired token', async (t) => {
   
-  const username = 'group29';
+  const username = 'group1672069371563';
   const password = 'test123';
-  const token = jwtSign({id: '63a8f02fbdb53fb7979924e1'});
+  const token = jwtSign({username});
+
+  const body = await t.context.got.post(`users/changepassword?token=${token}`, {
+    json: {username, password}
+  }).json();
+  t.is(body.status, 410)
+})
+
+test('POST /changepassword returns correct response for incorrect user', async (t) => {
+  
+  const username = 'group0';
+  const password = 'test123';
+  const token = jwtSign({username});
 
   const body = await t.context.got.post(`users/changepassword?token=${token}`, {
     json: {username, password}
   }).json();
   t.is(body.status, 404)
 })
-
 
 // SOURCES
 test('GET /sources returns correct response and status code', async (t) => {
