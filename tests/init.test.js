@@ -13,7 +13,7 @@ test.before(async (t) => {
   t.context.server = http.createServer(app);
   t.context.prefixUrl = await listen(t.context.server);
   t.context.got = got.extend({http2: true, throwHttpErrors: false, responseType: 'json', 
-                              contentType: 'json', prefixUrl: t.context.prefixUrl});
+                              prefixUrl: t.context.prefixUrl});
 });
 
 test.after.always((t) => {
@@ -29,9 +29,10 @@ test('GET /statistics returns correct response and status code', async (t) => {
 });
 
 test('GET /test-url returns correct response and status code', async (t) => {
-  
-  const body = await t.context.got('general/test-url');
+  const test_url = "https://se2-frontend.netlify.app/";
+  const body = await t.context.got(`general/test-url?url=${test_url}`);
   t.is(body.statusCode, 200);
+  // t.assert(body.active);
 });
 
 test('GET /test-url-request returns correct response and status code', async (t) => {
@@ -48,16 +49,61 @@ test('GET /test-url-request returns correct response and status code', async (t)
 // USERS
 test('POST /create returns correct response and status code', async (t) => {
   
-  const bodyDict = {
-    username: 'group19', 
-    email: 'test@domain.com', 
-    password: 'test'
-  }
-  const bodyString = JSON.stringify(bodyDict)
+  const username = 'group30';
+  const password = 'test123';
+  const email = 'test30@domain.com';
 
-  const response = await t.context.got.post('users/create', {body:bodyString});
-  console.log(response.body)
-  t.pass();
+  const body = await t.context.got.post('users/create', {
+    json: {username, password, email}
+  }).json();
+  t.assert(body.success);
+});
+
+test('POST /create returns correct response for used email', async (t) => {
+  
+  const username = 'group22';
+  const password = 'test123';
+  const email = 'test21@domain.com';
+
+  const body = await t.context.got.post('users/create', {
+    json: {username, password, email}
+  }).json();
+  t.is(body.status, 409);
+});
+
+test('POST /authenticate returns correct response and status code', async (t) => {
+  
+  const username = 'group20';
+  const password = 'test123';
+
+  const body = await t.context.got.post('users/authenticate', {
+    json: {username, password}
+  }).json();
+  t.is(body.user.username, 'group20');
+  t.is(body.user.id, '63a8e8245beede9f3c65b852')
+})
+
+test('POST /resetpassword returns correct response and status code', async (t) => {
+  
+  const username = 'group20';
+
+  const body = await t.context.got.post('users/resetpassword', {
+    json: {username}
+  }).json();
+  t.assert(body.ok);
+})
+
+test('POST /changepassword returns correct response and status code', async (t) => {
+  
+  const username = 'group29';
+  const password = 'test123';
+  const token = jwtSign({id: '63a8f02fbdb53fb7979924e1'});
+
+  const body = await t.context.got.post(`users/changepassword?token=${token}`, {
+    json: {username, password}
+  }).json();
+  console.log(body);
+  t.is(body.status, 404)
 })
 
 // SOURCES
