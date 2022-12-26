@@ -150,6 +150,26 @@ test('POST /changepassword returns correct response for incorrect user', async (
   t.is(body.status, 404)
 })
 
+// VALIDATION.JS
+test('POST /validation returns correct response for small password', async (t) => {
+  
+  const {validation} = require('../src/middlewares');
+
+  const username = 'group22';
+  const password = 'test';
+
+  const mockReq = {
+    body: {username, password}
+  };
+  const mockRes = {};
+  const next = (err) => {
+    t.is(err.message, 'Validation Error: password must be at least 5 characters');
+    t.is(err.status, 400);
+  };
+
+  await validation(mockReq, mockRes, next, 'register');
+});
+
 // SOURCES
 test('GET /sources returns correct response and status code', async (t) => {
   const token = jwtSign({id: 1});
