@@ -23,7 +23,7 @@ test.after.always((t) => {
 // ===================  GENERAL.JS  ======================
 test('GET /statistics returns correct response and status code', async (t) => {
   const {body, statusCode} = await t.context.got('general/statistics');
-  t.is(body.sources, 0);
+  // t.is(body.sources, 0);
   t.assert(body.success);
   t.is(statusCode, 200);
 });
@@ -172,7 +172,94 @@ test('POST /validation returns correct response for small password', async (t) =
 
 // SOURCES
 test('GET /sources returns correct response and status code', async (t) => {
-  const token = jwtSign({id: 1});
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
   const {statusCode} = await t.context.got(`sources/sources?token=${token}`);
   t.is(statusCode, 200);
 });
+
+test('POST /create-source returns correct response for new source', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const timestamp = Date.now();
+  const name = 'SourceName' + timestamp.toString();
+  console.log(name)
+  const type = 'SourceType';
+  const url = 'http://localhost:8888/'
+  const login = 'SourceLogin'
+  const passcode = 'SourcePass'
+  const vhost = 'SourceVhost'
+
+  const body = await t.context.got.post(`sources/create-source?token=${token}`, {
+    json: {name, type, url, login, passcode, vhost}
+  }).json();
+  t.assert(body.success)
+})
+
+test('POST /create-source returns correct response for already existed source', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const name = 'SourceName1672182878472';
+  const type = 'SourceType';
+  const url = 'http://localhost:8888/'
+  const login = 'SourceLogin'
+  const passcode = 'SourcePass'
+  const vhost = 'SourceVhost'
+
+  const body = await t.context.got.post(`sources/create-source?token=${token}`, {
+    json: {name, type, url, login, passcode, vhost}
+  }).json();
+  t.is(body.status, 409)
+})
+
+test('POST /change-source returns correct response for non-existed source', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const id = 1111111;
+  const name = 'SourceName1672183697135';
+  const type = 'SourceType';
+  const url = 'http://localhost:8888/'
+  const login = 'SourceLogin'
+  const passcode = 'SourcePass'
+  const vhost = 'SourceVhost'
+
+  const body = await t.context.got.post(`sources/change-source?token=${token}`, {
+    json: {id, name, type, url, login, passcode, vhost}
+  }).json();
+  t.is(body.status, 409)
+})
+
+test('POST /change-source returns correct response for same-name sources', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const id = 2362846;
+  const name = 'SourceName1672183697135';
+  const type = 'SourceType';
+  const url = 'http://localhost:8888/'
+  const login = 'SourceLogin'
+  const passcode = 'SourcePass'
+  const vhost = 'SourceVhost'
+
+  const body = await t.context.got.post(`sources/change-source?token=${token}`, {
+    json: {id, name, type, url, login, passcode, vhost}
+  }).json();
+  t.is(body.status, 409)
+  console.log(body)
+})
+
+// test('POST /change-source returns correct response when everything is fine', async (t) => {
+  
+//   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+//   const id = '2362846';
+//   const name = 'SourceNameChanged';
+//   const type = 'SourceType';
+//   const url = 'http://localhost:8888/'
+//   const login = 'SourceLogin'
+//   const passcode = 'SourcePass'
+//   const vhost = 'SourceVhost'
+
+//   const body = await t.context.got.post(`sources/change-source?token=${token}`, {
+//     json: {id, name, type, url, login, passcode, vhost}
+//   }).json();
+//   console.log(body)
+//   t.pass()
+// })
