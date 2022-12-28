@@ -8,6 +8,10 @@ const router = express.Router();
 const Dashboard = require('../models/dashboard');
 const Source = require('../models/source');
 
+
+/**
+ * GET request to retrieve all dashboard components of user wuth specific id
+ */
 router.get('/dashboards',
   authorization,
   async (req, res, next) => {
@@ -32,6 +36,9 @@ router.get('/dashboards',
     }
   });
 
+/**
+ * POST request to create a new dashboard component 
+ */
 router.post('/create-dashboard', 
   authorization,
   async (req, res, next) => {
@@ -59,6 +66,9 @@ router.post('/create-dashboard',
     }
   }); 
 
+/**
+ * POST request to delete an existing dashboard component
+ */
 router.post('/delete-dashboard', 
   authorization,
   async (req, res, next) => {
@@ -78,6 +88,9 @@ router.post('/delete-dashboard',
     }
   }); 
 
+/**
+ * GET request to retrieve a specific dashboard component of a specific user
+ */
 router.get('/dashboard',
   authorization,
   async (req, res, next) => {
@@ -115,6 +128,9 @@ router.get('/dashboard',
     }
   });
 
+  /**
+   * POST request to update and save a specific dashboard component of a user
+   */
 router.post('/save-dashboard', 
   authorization,
   async (req, res, next) => {
@@ -141,6 +157,9 @@ router.post('/save-dashboard',
     }
   }); 
 
+  /**
+   * POST request to clone a dashboard component  of a user into a new one
+   */
 router.post('/clone-dashboard', 
   authorization,
   async (req, res, next) => {
@@ -171,6 +190,9 @@ router.post('/clone-dashboard',
     }
   }); 
 
+  /**
+   * POST request to check if a specific dashboard component needs a password
+   */
 router.post('/check-password-needed', 
   async (req, res, next) => {
     try {
@@ -232,6 +254,9 @@ router.post('/check-password-needed',
     }
   }); 
 
+  /**
+   * POST request to compare the password given with the dashboard's password and if validated, show the dashboard component
+   */
 router.post('/check-password', 
   async (req, res, next) => {
     try {
@@ -270,6 +295,9 @@ router.post('/check-password',
     }
   }); 
 
+  /**
+   * POST request to share a specific dashboard component
+   */
 router.post('/share-dashboard', 
   authorization,
   async (req, res, next) => {
@@ -297,6 +325,9 @@ router.post('/share-dashboard',
     }
   }); 
 
+  /**
+   * POST request to change the password of a specific dashboard component
+   */
 router.post('/change-password', 
   authorization,
   async (req, res, next) => {
