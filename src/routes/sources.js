@@ -7,6 +7,9 @@ const router = express.Router();
 
 const Source = require('../models/source');
 
+/**
+ * GET request to retrieve all the source components of a specific user
+ */
 router.get('/sources',
   authorization,
   async (req, res, next) => {
@@ -36,6 +39,9 @@ router.get('/sources',
     }
   });
 
+  /**
+   * POST request to create a new source component 
+   */
 router.post('/create-source', 
   authorization,
   async (req, res, next) => {
@@ -65,6 +71,9 @@ router.post('/create-source',
     }
   }); 
 
+  /**
+   * POST request to change a specific sourse component of a user
+   */
 router.post('/change-source', 
   authorization,
   async (req, res, next) => {
@@ -100,6 +109,9 @@ router.post('/change-source',
     }
   }); 
 
+  /**
+   * POST request to delete a specific source component of a user
+   */
 router.post('/delete-source', 
   authorization,
   async (req, res, next) => {
@@ -119,6 +131,9 @@ router.post('/delete-source',
     }
   }); 
 
+  /**
+   * POST request to find a specific source component by its name
+   */
 router.post('/source',
   async (req, res, next) => {
     try {
@@ -148,6 +163,9 @@ router.post('/source',
     }
   });
 
+  /**
+   * POST request to check and retrieve all new source components of a specific user
+   */
 router.post('/check-sources',
   authorization,
   async (req, res, next) => {
