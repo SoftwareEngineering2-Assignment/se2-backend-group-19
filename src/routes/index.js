@@ -5,6 +5,7 @@ const dashboards = require('./dashboards');
 const general = require('./general');
 const root = require('./root');
 
+// configure router
 const router = express.Router();
 
 router.use('/users', users);
