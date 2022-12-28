@@ -8,6 +8,9 @@ const User = require('../models/user');
 const Dashboard = require('../models/dashboard');
 const Source = require('../models/source');
 
+/**
+ * GET request to get the total users, dashboards and views 
+ */
 router.get('/statistics',
   async (req, res, next) => {
     try {
@@ -40,6 +43,9 @@ router.get('/statistics',
     }
   });
 
+  /**
+   * GET request to test the url given 
+   */
 router.get('/test-url',
   async (req, res) => {
     try {
@@ -57,6 +63,9 @@ router.get('/test-url',
     }
   });
 
+  /**
+   * GET request to test the url requests (GET, POST, PUT)
+   */
 router.get('/test-url-request',
   async (req, res) => {
     try {
