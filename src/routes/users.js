@@ -9,6 +9,9 @@ const router = express.Router();
 const User = require('../models/user');
 const Reset = require('../models/reset');
 
+/**
+ * POST request to create and validate a new user
+ */
 router.post('/create',
   (req, res, next) => validation(req, res, next, 'register'),
   async (req, res, next) => {
@@ -32,6 +35,9 @@ router.post('/create',
     }
   });
 
+  /**
+   * POST request to authenticate a user by username and password
+   */
 router.post('/authenticate',
   (req, res, next) => validation(req, res, next, 'authenticate'),
   async (req, res, next) => {
@@ -63,6 +69,9 @@ router.post('/authenticate',
     }
   });
 
+  /**
+   * POST request to reset a user's password
+   */
 router.post('/resetpassword',
   (req, res, next) => validation(req, res, next, 'request'),
   async (req, res, next) => {
@@ -93,6 +102,9 @@ router.post('/resetpassword',
     }
   });
 
+  /**
+   * POST request to change a user's password
+   */
 router.post('/changepassword',
   (req, res, next) => validation(req, res, next, 'change'),
   authorization,
