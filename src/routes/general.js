@@ -10,6 +10,7 @@ const Source = require('../models/source');
 
 /**
  * GET request to get the total users, dashboards and views 
+ * Provides the statistics of the login page
  */
 router.get('/statistics',
   async (req, res, next) => {
@@ -45,6 +46,7 @@ router.get('/statistics',
 
   /**
    * GET request to test the url given 
+   * @returns status 200 for success and status 500 for failure
    */
 router.get('/test-url',
   async (req, res) => {

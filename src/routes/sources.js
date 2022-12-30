@@ -49,12 +49,15 @@ router.post('/create-source',
       const {name, type, url, login, passcode, vhost} = req.body;
       const {id} = req.decoded;
       const foundSource = await Source.findOne({owner: mongoose.Types.ObjectId(id), name});
+
+      // error case if new source's name is already used
       if (foundSource) {
         return res.json({
           status: 409,
           message: 'A source with that name already exists.'
         });
       }
+      // create new source
       await new Source({
         name,
         type,
@@ -80,6 +83,8 @@ router.post('/change-source',
     try {
       const {id, name, type, url, login, passcode, vhost} = req.body;
       const foundSource = await Source.findOne({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)});
+      
+      // error case if there is no source with the id and owner given
       if (!foundSource) {
         return res.json({
           status: 409,
@@ -88,6 +93,8 @@ router.post('/change-source',
       }
       
       const sameNameSources = await Source.findOne({_id: {$ne: mongoose.Types.ObjectId(id)}, owner: mongoose.Types.ObjectId(req.decoded.id), name});
+      
+      // error case if new source's name is already used
       if (sameNameSources) {
         return res.json({
           status: 409,
@@ -95,6 +102,7 @@ router.post('/change-source',
         });
       }
 
+      // change source
       foundSource.name = name;
       foundSource.type = type;
       foundSource.url = url;
@@ -119,6 +127,7 @@ router.post('/delete-source',
       const {id} = req.body;
 
       const foundSource = await Source.findOneAndRemove({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)});
+      // error case if there is no source with the id and owner given
       if (!foundSource) {
         return res.json({
           status: 409,
@@ -140,6 +149,7 @@ router.post('/source',
       const {name, owner, user} = req.body;
       const userId = (owner === 'self') ? user.id : owner;
       const foundSource = await Source.findOne({name, owner: mongoose.Types.ObjectId(userId)});
+      // error case if there is no source with the name and owner given
       if (!foundSource) {
         return res.json({
           status: 409,
@@ -164,7 +174,7 @@ router.post('/source',
   });
 
   /**
-   * POST request to check and retrieve all new source components of a specific user
+   * POST request to check given source components of a specific user
    */
 router.post('/check-sources',
   authorization,
@@ -175,6 +185,7 @@ router.post('/check-sources',
 
       const newSources = [];
 
+      // add new sources 
       for (let i = 0; i < sources.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
         const result = await Source.findOne({name: sources[i], owner: mongoose.Types.ObjectId(id)});

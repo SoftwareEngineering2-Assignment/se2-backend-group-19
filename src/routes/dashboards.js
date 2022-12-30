@@ -10,7 +10,7 @@ const Source = require('../models/source');
 
 
 /**
- * GET request to retrieve all dashboard components of user wuth specific id
+ * GET request to retrieve all dashboard components of user with specific id
  */
 router.get('/dashboards',
   authorization,
@@ -46,6 +46,8 @@ router.post('/create-dashboard',
       const {name} = req.body;
       const {id} = req.decoded;
       const foundDashboard = await Dashboard.findOne({owner: mongoose.Types.ObjectId(id), name});
+      
+      // error case if new dashboard's name is already used
       if (foundDashboard) {
         return res.json({
           status: 409,
@@ -67,7 +69,7 @@ router.post('/create-dashboard',
   }); 
 
 /**
- * POST request to delete an existing dashboard component
+ * POST request to delete an existing dashboard component of a user
  */
 router.post('/delete-dashboard', 
   authorization,
@@ -76,6 +78,8 @@ router.post('/delete-dashboard',
       const {id} = req.body;
 
       const foundDashboard = await Dashboard.findOneAndRemove({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)});
+
+      // error case if there is no dashboard with specific id and owner
       if (!foundDashboard) {
         return res.json({
           status: 409,
@@ -98,6 +102,7 @@ router.get('/dashboard',
       const {id} = req.query;
 
       const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)});
+      // error case if there is no dashboard with specific id and owner      
       if (!foundDashboard) {
         return res.json({
           status: 409,
@@ -138,6 +143,7 @@ router.post('/save-dashboard',
       const {id, layout, items, nextId} = req.body;
 
       const result = await Dashboard.findOneAndUpdate({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)}, {
+        // update new values
         $set: {
           layout,
           items,
@@ -145,6 +151,7 @@ router.post('/save-dashboard',
         }
       }, {new: true});
 
+      // error case if there is no dashboard with specific id and owner
       if (result === null) {
         return res.json({
           status: 409,
@@ -157,9 +164,9 @@ router.post('/save-dashboard',
     }
   }); 
 
-  /**
-   * POST request to clone a dashboard component  of a user into a new one
-   */
+/**
+ * POST request to clone a dashboard component  of a user into a new one
+ */
 router.post('/clone-dashboard', 
   authorization,
   async (req, res, next) => {
@@ -167,6 +174,8 @@ router.post('/clone-dashboard',
       const {dashboardId, name} = req.body;
 
       const foundDashboard = await Dashboard.findOne({owner: mongoose.Types.ObjectId(req.decoded.id), name});
+
+      // error case if new dashboard's name is already used
       if (foundDashboard) {
         return res.json({
           status: 409,
@@ -176,6 +185,7 @@ router.post('/clone-dashboard',
 
       const oldDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(req.decoded.id)});
       
+      // copy everything to a new dashboard component
       await new Dashboard({
         name,
         layout: oldDashboard.layout,
@@ -200,6 +210,7 @@ router.post('/check-password-needed',
       const userId = user.id;
 
       const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId)}).select('+password');
+      // error case if there is no dashboard with specific id and owner
       if (!foundDashboard) {
         return res.json({
           status: 409,
@@ -212,6 +223,7 @@ router.post('/check-password-needed',
       dashboard.layout = foundDashboard.layout;
       dashboard.items = foundDashboard.items;
 
+      // case where the user owns the dashboard component
       if (userId && foundDashboard.owner.equals(userId)) {
         foundDashboard.views += 1;
         await foundDashboard.save();
@@ -224,6 +236,7 @@ router.post('/check-password-needed',
           dashboard
         });
       } 
+      // case where the dashboard component is not shared
       if (!(foundDashboard.shared)) {
         return res.json({
           success: true,
@@ -231,6 +244,7 @@ router.post('/check-password-needed',
           shared: false
         });
       }
+      // case where the dashboard component has no password and is shared
       if (foundDashboard.password === null) {
         foundDashboard.views += 1;
         await foundDashboard.save();
@@ -243,6 +257,8 @@ router.post('/check-password-needed',
           dashboard
         });
       }
+
+      // default case
       return res.json({
         success: true,
         owner: '',
@@ -263,19 +279,21 @@ router.post('/check-password',
       const {dashboardId, password} = req.body;
 
       const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId)}).select('+password');
+      // error case if there is no dashboard with specific id and owner
       if (!foundDashboard) {
         return res.json({
           status: 409,
           message: 'The specified dashboard has not been found.'
         });
       }
+      // error case if the password given is wrong
       if (!foundDashboard.comparePassword(password, foundDashboard.password)) {
         return res.json({
           success: true,
           correctPassword: false
         });
       }
-
+      // case where the correct dashboard password is given
       foundDashboard.views += 1;
       await foundDashboard.save();
 
@@ -306,12 +324,16 @@ router.post('/share-dashboard',
       const {id} = req.decoded;
 
       const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(id)});
+
+      // error case if there is no dashboard with specific id and owner
       if (!foundDashboard) {
         return res.json({
           status: 409,
           message: 'The specified dashboard has not been found.'
         });
       }
+
+      // share dashboard
       foundDashboard.shared = !(foundDashboard.shared);
       
       await foundDashboard.save();
@@ -336,12 +358,16 @@ router.post('/change-password',
       const {id} = req.decoded;
 
       const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(id)});
+
+      // error case if there is no dashboard with specific id and owner
       if (!foundDashboard) {
         return res.json({
           status: 409,
           message: 'The specified dashboard has not been found.'
         });
       }
+
+      // change password
       foundDashboard.password = password;
       
       await foundDashboard.save();
