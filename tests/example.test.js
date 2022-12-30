@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 const test = require('ava').default;
 
+// example tests with ava
 test('Test to pass', (t) => {
   t.pass();
 });

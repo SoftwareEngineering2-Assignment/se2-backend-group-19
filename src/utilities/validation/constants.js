@@ -1,3 +1,5 @@
+// exports validation constants
+
 const min = 5;
 const expires = '12h';
 
