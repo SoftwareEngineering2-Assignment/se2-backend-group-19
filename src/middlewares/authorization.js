@@ -18,6 +18,8 @@ module.exports = (req, res, next) => {
       (t) => slice(7, t.length, t).trimLeft(),
       identity
     ),
+    
+    // error case if token is missing
     ifElse(
       isNil,
       () =>
@@ -25,6 +27,8 @@ module.exports = (req, res, next) => {
           message: 'Authorization Error: token missing.',
           status: 403
         }),
+
+      // error case if token has expired  
       (token) =>
         jwt.verify(token, secret, (e, d) =>
           ifElse(

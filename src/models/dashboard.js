@@ -5,6 +5,7 @@ const {passwordDigest, comparePassword} = require('../utilities/authentication/h
 
 mongoose.pluralize(null);
 
+// createe dashboard schema
 const DashboardSchema = new mongoose.Schema(
   {
     name: {
