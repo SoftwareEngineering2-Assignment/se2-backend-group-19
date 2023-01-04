@@ -353,7 +353,7 @@ test('authorization middleware with no token', (t) => {
 
 // ===================  DASHBOARDS.JS  ======================
 const last_dashboard = {
-  id: '63b57ee2eb9ebae23681a20c',
+  id: '63b5794bc63c22d54dc41344', // Change this ID to delete something that actually exists!
 };
 
 test('GET /dashboards returns correct response and status code', async (t) => {
@@ -452,4 +452,43 @@ test('POST /save-dashboard returns correct response for existed dashbooard', asy
     json: {id, layout, items, nextId}
   }).json();
   t.assert(body.success);
+});
+
+test('POST /clone-dashboard returns correct response for existed dashbooard and new name', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const dashboardId = '63b573a00723c8c453695bc7';
+  const timestamp = Date.now();
+  const name = 'Dashboard_' + timestamp.toString();
+
+  const body = await t.context.got.post(`dashboards/clone-dashboard?token=${token}`, {
+    json: {dashboardId, name}
+  }).json();
+  t.assert(body.success);
+});
+
+// test('POST /clone-dashboard returns correct response for non-existed dashbooard and new name', async (t) => {
+  
+//   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+//   const dashboardId = '63b573a00723c8c453695bc0';
+//   const timestamp = Date.now();
+//   const name = 'Dashboard_' + timestamp.toString();
+
+//   const body = await t.context.got.post(`dashboards/clone-dashboard?token=${token}`, {
+//     json: {dashboardId, name}
+//   }).json();
+//   console.log('clone-body: ', body)
+//   t.pass();
+// });
+
+test('POST /clone-dashboard returns correct response for existed name', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const dashboardId = 'empty-id';
+  const name = 'Dashboard_1672835482545';
+
+  const body = await t.context.got.post(`dashboards/clone-dashboard?token=${token}`, {
+    json: {dashboardId, name}
+  }).json();
+  t.is(body.status, 409);
 });
