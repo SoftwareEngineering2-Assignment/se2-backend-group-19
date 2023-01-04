@@ -9,6 +9,7 @@ const listen = require('test-listen');
 const app = require('../src/index');
 const {jwtSign} = require('../src/utilities/authentication/helpers');
 const errorMiddleware = require('../src/middlewares/error');
+const authorizationMiddleware = require('../src/middlewares/authorization');
 
 test.before(async (t) => {
   t.context.server = http.createServer(app);
@@ -296,4 +297,57 @@ test('error middleware with status code', (t) => {
   };
   const next = () => {};
   errorMiddleware({ message: 'Bad request', status: 400 }, req, res, next);
+});
+
+// ===================  AUTHORIZATION.JS  ======================
+test('authorization middleware with valid token in query string', (t) => {
+  const valid_token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const req = {
+    query: {
+      token: valid_token,
+    },
+  };
+  const res = {};
+  const next = (error) => {
+    t.is(error, undefined);
+  };
+  authorizationMiddleware(req, res, next);
+});
+
+test('authorization middleware with valid token in headers', (t) => {
+  const valid_token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const req = {
+    headers: {
+      'x-access-token': valid_token,
+    },
+  };
+  const res = {};
+  const next = (error) => {
+    t.is(error, undefined);
+  };
+  authorizationMiddleware(req, res, next);
+});
+
+test('authorization middleware with invalid token in query string', (t) => {
+  const req = {
+    query: {
+      token: 'invalid-token',
+    },
+  };
+  const res = {};
+  const next = (error) => {
+    t.is(error.message, 'Authorization Error: Failed to verify token.');
+    t.is(error.status, 403);
+  };
+  authorizationMiddleware(req, res, next);
+});
+
+test('authorization middleware with no token', (t) => {
+  const req = {};
+  const res = {};
+  const next = (error) => {
+    t.is(error.message, 'Authorization Error: token missing.');
+    t.is(error.status, 403);
+  };
+  authorizationMiddleware(req, res, next);
 });
