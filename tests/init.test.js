@@ -10,6 +10,7 @@ const app = require('../src/index');
 const {jwtSign} = require('../src/utilities/authentication/helpers');
 const errorMiddleware = require('../src/middlewares/error');
 const authorizationMiddleware = require('../src/middlewares/authorization');
+const { none } = require('ramda');
 
 test.before(async (t) => {
   t.context.server = http.createServer(app);
@@ -184,7 +185,6 @@ test('POST /create-source returns correct response for new source', async (t) =>
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
   const timestamp = Date.now();
   const name = 'SourceName' + timestamp.toString();
-  console.log(name)
   const type = 'SourceType';
   const url = 'http://localhost:8888/'
   const login = 'SourceLogin'
@@ -245,7 +245,6 @@ test('POST /change-source returns correct response for same-name sources', async
     json: {id, name, type, url, login, passcode, vhost}
   }).json();
   t.is(body.status, 409)
-  console.log(body)
 })
 
 // test('POST /change-source returns correct response when everything is fine', async (t) => {
@@ -353,9 +352,31 @@ test('authorization middleware with no token', (t) => {
 });
 
 // ===================  DASHBOARDS.JS  ======================
+const last_dashboard = {
+  id: '63b5808b81523be6c8dcc9ea',
+};
+
 test('GET /dashboards returns correct response and status code', async (t) => {
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
   const {body} = await t.context.got(`dashboards/dashboards?token=${token}`);
+  console.log('--> Dashboards: ', body.dashboards)
+  last_dashboard.id = body.dashboards[body.dashboards.length - 1].id
+  t.assert(body.success);
+});
+
+test('GET /dashboard returns correct response for non-existed dashboard', async (t) => {
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const id = '63b580555b4d29e60995c000'
+
+  const {body} = await t.context.got(`dashboards/dashboard?token=${token}&id=${id}`);
+  t.is(body.status, 409);
+});
+
+test('GET /dashboard returns correct response for existed dashboard', async (t) => {
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const id = '63b5719c913051bf3178da4a'
+
+  const {body} = await t.context.got(`dashboards/dashboard?token=${token}&id=${id}`);
   t.assert(body.success);
 });
 
@@ -364,11 +385,11 @@ test('POST /create-dashboard returns correct response for new dashbooard', async
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
   const timestamp = Date.now();
   const name = 'Dashboard_' + timestamp.toString();
-  console.log(name);
 
   const body = await t.context.got.post(`dashboards/create-dashboard?token=${token}`, {
     json: {name}
   }).json();
+
   t.assert(body.success);
 });
 
@@ -379,6 +400,28 @@ test('POST /create-dashboard returns correct response for existed dashbooard', a
 
   const body = await t.context.got.post(`dashboards/create-dashboard?token=${token}`, {
     json: {name}
+  }).json();
+  t.is(body.status, 409);
+});
+
+test('POST /delete-dashboard returns correct response for existed dashbooard', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const id = last_dashboard.id;
+
+  const body = await t.context.got.post(`dashboards/delete-dashboard?token=${token}`, {
+    json: {id}
+  }).json();
+  t.assert(body.success);
+});
+
+test('POST /delete-dashboard returns correct response for non-existed dashbooard', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const id = -1;
+
+  const body = await t.context.got.post(`dashboards/delete-dashboard?token=${token}`, {
+    json: {id}
   }).json();
   t.is(body.status, 409);
 });
