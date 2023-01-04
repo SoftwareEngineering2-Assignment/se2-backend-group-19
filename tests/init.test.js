@@ -8,6 +8,7 @@ const listen = require('test-listen');
 
 const app = require('../src/index');
 const {jwtSign} = require('../src/utilities/authentication/helpers');
+const errorMiddleware = require('../src/middlewares/error');
 
 test.before(async (t) => {
   t.context.server = http.createServer(app);
@@ -150,7 +151,7 @@ test('POST /changepassword returns correct response for incorrect user', async (
   t.is(body.status, 404)
 })
 
-// VALIDATION.JS
+// ===================  VALIDATION.JS  ======================
 test('POST /validation returns correct response for small password', async (t) => {
   
   const {validation} = require('../src/middlewares');
@@ -170,7 +171,7 @@ test('POST /validation returns correct response for small password', async (t) =
   await validation(mockReq, mockRes, next, 'register');
 });
 
-// SOURCES
+// ===================  SOURCES.JS  ======================
 test('GET /sources returns correct response and status code', async (t) => {
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
   const {statusCode} = await t.context.got(`sources/sources?token=${token}`);
@@ -263,3 +264,36 @@ test('POST /change-source returns correct response for same-name sources', async
 //   console.log(body)
 //   t.pass()
 // })
+
+// ===================  ERROR.JS  ======================
+test('error middleware', (t) => {
+  const req = {};
+  const res = {
+    status: (status) => {
+      t.is(status, 500);
+      return res;
+    },
+    json: (error) => {
+      t.is(error.message, 'An error occurred');
+      t.is(error.status, 500);
+    },
+  };
+  const next = () => {};
+  errorMiddleware(new Error('An error occurred'), req, res, next);
+});
+
+test('error middleware with status code', (t) => {
+  const req = {};
+  const res = {
+    status: (status) => {
+      t.is(status, 400);
+      return res;
+    },
+    json: (error) => {
+      t.is(error.message, 'Bad request');
+      t.is(error.status, 400);
+    },
+  };
+  const next = () => {};
+  errorMiddleware({ message: 'Bad request', status: 400 }, req, res, next);
+});
