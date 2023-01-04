@@ -351,3 +351,34 @@ test('authorization middleware with no token', (t) => {
   };
   authorizationMiddleware(req, res, next);
 });
+
+// ===================  DASHBOARDS.JS  ======================
+test('GET /dashboards returns correct response and status code', async (t) => {
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const {body} = await t.context.got(`dashboards/dashboards?token=${token}`);
+  t.assert(body.success);
+});
+
+test('POST /create-dashboard returns correct response for new dashbooard', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const timestamp = Date.now();
+  const name = 'Dashboard_' + timestamp.toString();
+  console.log(name);
+
+  const body = await t.context.got.post(`dashboards/create-dashboard?token=${token}`, {
+    json: {name}
+  }).json();
+  t.assert(body.success);
+});
+
+test('POST /create-dashboard returns correct response for existed dashbooard', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const name = 'Dashboard_1672835482545';
+
+  const body = await t.context.got.post(`dashboards/create-dashboard?token=${token}`, {
+    json: {name}
+  }).json();
+  t.is(body.status, 409);
+});
