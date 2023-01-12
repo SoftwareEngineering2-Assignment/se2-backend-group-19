@@ -354,7 +354,7 @@ test('authorization middleware with no token', (t) => {
 
 // ===================  DASHBOARDS.JS  ======================
 const last_dashboard = {
-  id: '63c0260dfe3382c3e7827a9e', // Change this ID to delete something that actually exists!
+  id: '63c02b4930fcf6d16ff7b7dd', // Change this ID to delete something that actually exists!
 };
 
 test('GET /dashboards returns correct response and status code', async (t) => {
@@ -499,7 +499,53 @@ test('POST /check-password-needed returns correct response for existed dashboard
   const body = await t.context.got.post(`dashboards/check-password-needed`, {
     json: {user, dashboardId}
   }).json();
-  console.log(body)
   t.assert(body.success);
   t.is(body.owner, 'self')
+});
+
+test('POST /check-password returns correct response for non-existed dashboard', async (t) => {
+  
+  const password = null;
+  const dashboardId = '63b5719c913051bf3178da66'; // wrond ID
+
+  const body = await t.context.got.post(`dashboards/check-password`, {
+    json: {dashboardId, password}
+  }).json();
+  t.is(body.status, 409);
+});
+
+test('POST /check-password returns correct response for existed dashboard with no password', async (t) => {
+  
+  const password = 'password';
+  const dashboardId = '63b573a00723c8c453695bc7'; // correct ID
+
+  const body = await t.context.got.post(`dashboards/check-password`, {
+    json: {dashboardId, password}
+  }).json();
+  t.assert(body.success)
+  t.assert(body.correctPassword)
+});
+
+test('POST /change-password returns correct response for existed dashboard', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const password = 'password';
+  const dashboardId = '63b573a00723c8c453695bc7'; // correct ID
+
+  const body = await t.context.got.post(`dashboards/change-password?token=${token}`, {
+    json: {dashboardId, password}
+  }).json();
+  t.assert(body.success)
+});
+
+test('POST /change-password returns correct response for non-existed dashboard', async (t) => {
+  
+  const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
+  const password = 'password';
+  const dashboardId = '63b573a00723c8c453695b77'; // wrong ID
+
+  const body = await t.context.got.post(`dashboards/change-password?token=${token}`, {
+    json: {dashboardId, password}
+  }).json();
+  t.is(body.status, 409)
 });

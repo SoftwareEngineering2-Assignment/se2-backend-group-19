@@ -257,6 +257,7 @@ router.post('/check-password',
           message: 'The specified dashboard has not been found.'
         });
       }
+      console.log(foundDashboard.password, password)
       if (!foundDashboard.comparePassword(password, foundDashboard.password)) {
         return res.json({
           success: true,
