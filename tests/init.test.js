@@ -354,7 +354,7 @@ test('authorization middleware with no token', (t) => {
 
 // ===================  DASHBOARDS.JS  ======================
 const last_dashboard = {
-  id: '63c02b4930fcf6d16ff7b7dd', // Change this ID to delete something that actually exists!
+  id: '63c02c79391ac306cd71def2', // Change this ID to delete something that actually exists!
 };
 
 test('GET /dashboards returns correct response and status code', async (t) => {
