@@ -60,6 +60,7 @@ test('POST /create returns correct response for new registration', async (t) => 
   const body = await t.context.got.post('users/create', {
     json: {username, password, email}
   }).json();
+  console.log(body)
   t.assert(body.success);
 });
 
@@ -353,7 +354,7 @@ test('authorization middleware with no token', (t) => {
 
 // ===================  DASHBOARDS.JS  ======================
 const last_dashboard = {
-  id: '63b5794bc63c22d54dc41344', // Change this ID to delete something that actually exists!
+  id: '63c0260dfe3382c3e7827a9e', // Change this ID to delete something that actually exists!
 };
 
 test('GET /dashboards returns correct response and status code', async (t) => {
@@ -374,7 +375,7 @@ test('GET /dashboard returns correct response for non-existed dashboard', async 
 
 test('GET /dashboard returns correct response for existed dashboard', async (t) => {
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
-  const id = '63b5719c913051bf3178da4a';
+  const id = '63b573a00723c8c453695bc7';
 
   const {body} = await t.context.got(`dashboards/dashboard?token=${token}&id=${id}`);
   t.assert(body.success);
@@ -396,7 +397,7 @@ test('POST /create-dashboard returns correct response for new dashbooard', async
 test('POST /create-dashboard returns correct response for existed dashbooard', async (t) => {
   
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
-  const name = 'Dashboard_1672835482545';
+  const name = 'Dashboard_1672835998849';
 
   const body = await t.context.got.post(`dashboards/create-dashboard?token=${token}`, {
     json: {name}
@@ -443,7 +444,7 @@ test('POST /save-dashboard returns correct response for non-existed dashbooard',
 test('POST /save-dashboard returns correct response for existed dashbooard', async (t) => {
   
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
-  const id = '63b5719c913051bf3178da4a';
+  const id = '63b573a00723c8c453695bc7';
   const layout = [];
   const items = {};
   const nextId = 1;
@@ -457,7 +458,7 @@ test('POST /save-dashboard returns correct response for existed dashbooard', asy
 test('POST /clone-dashboard returns correct response for existed dashbooard and new name', async (t) => {
   
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
-  const dashboardId = '63b573a00723c8c453695bc7';
+  const dashboardId = '63b573a00723c8c453695bc7'; // correct ID
   const timestamp = Date.now();
   const name = 'Dashboard_' + timestamp.toString();
 
@@ -467,28 +468,38 @@ test('POST /clone-dashboard returns correct response for existed dashbooard and 
   t.assert(body.success);
 });
 
-// test('POST /clone-dashboard returns correct response for non-existed dashbooard and new name', async (t) => {
-  
-//   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
-//   const dashboardId = '63b573a00723c8c453695bc0';
-//   const timestamp = Date.now();
-//   const name = 'Dashboard_' + timestamp.toString();
-
-//   const body = await t.context.got.post(`dashboards/clone-dashboard?token=${token}`, {
-//     json: {dashboardId, name}
-//   }).json();
-//   console.log('clone-body: ', body)
-//   t.pass();
-// });
-
 test('POST /clone-dashboard returns correct response for existed name', async (t) => {
   
   const token = jwtSign({id: '63a8e8245beede9f3c65b852'});
-  const dashboardId = 'empty-id';
-  const name = 'Dashboard_1672835482545';
+  const dashboardId = '63b5719c913051bf3178da66'; // wrond ID
+  const name = 'Dashboard_1672835998849';
 
   const body = await t.context.got.post(`dashboards/clone-dashboard?token=${token}`, {
     json: {dashboardId, name}
   }).json();
   t.is(body.status, 409);
+});
+
+test('POST /check-password-needed returns correct response for non-existed dashboard', async (t) => {
+  
+  const user = {'id': '63a8e8245beede9f3c65b852'}
+  const dashboardId = '63b5719c913051bf3178da66'; // wrond ID
+
+  const body = await t.context.got.post(`dashboards/check-password-needed`, {
+    json: {user, dashboardId}
+  }).json();
+  t.is(body.status, 409);
+});
+
+test('POST /check-password-needed returns correct response for existed dashboard', async (t) => {
+  
+  const user = {'id': '63a8e8245beede9f3c65b852'}
+  const dashboardId = '63b573a00723c8c453695bc7'; // correct ID
+
+  const body = await t.context.got.post(`dashboards/check-password-needed`, {
+    json: {user, dashboardId}
+  }).json();
+  console.log(body)
+  t.assert(body.success);
+  t.is(body.owner, 'self')
 });
