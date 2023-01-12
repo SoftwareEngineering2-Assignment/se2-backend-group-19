@@ -49,6 +49,8 @@ router.post('/create-source',
           message: 'A source with that name already exists.'
         });
       }
+      console.log(mongoose.Types.ObjectId.index)
+      console.log(mongoose.Types.ObjectId(id))
       await new Source({
         name,
         type,
@@ -69,7 +71,10 @@ router.post('/change-source',
   authorization,
   async (req, res, next) => {
     try {
+      
       const {id, name, type, url, login, passcode, vhost} = req.body;
+      console.log(mongoose.Types.ObjectId(id))
+      console.log(mongoose.Types.ObjectId(req.decoded.id))
       const foundSource = await Source.findOne({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)});
       if (!foundSource) {
         return res.json({
